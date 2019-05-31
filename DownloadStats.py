@@ -14,12 +14,8 @@ BALANCE_TOLERANCE = 100
 SR_FOR_UNRANKED = 2000
 DEFAULT_SERVER = 'http://owapi.net/api/v3/u/'
 DEFAULT_WAIT_BETWEEN_REQS = 30
-VERSION="0.0.1"
+VERSION="1.0"
 HEROES = ["Doomfist", "Genji", "McCree", "Pharah", "Reaper", "Soldier76", "Sombra", "Tracer", "Bastion", "Hanzo", "Junkrat", "Mei", "Torbjorn", "Widowmaker", "DVa", "Orisa", "Reinhardt", "Roadhog", "Winston", "Zarya", "Ana", "Brigitte", "Lucio", "Mercy", "Moira", "Symmetra", "Zenyatta"]
-
-#Stack2 = [ "Eraserbrain-1563", "XxWEEDGOKUxX-1418", "Apologies-11703" ]
-Stack2 = [ "LGBTracer-2875", "Wonderbrah-21110" ]
-
 
 class OWAPIClient():
 	def __init__(this, server=DEFAULT_SERVER, req_stagger=DEFAULT_WAIT_BETWEEN_REQS):
@@ -121,11 +117,5 @@ def BalanceTeams(Players, TeamSize = 6):
 if __name__ == "__main__":
 	global client 
 	client = OWAPIClient()
-	#for Player in AllPlayers: client.get_data(Player)
-	#for Player in CompStack1: client.get_data(Player)
-	#client.get_data("ÐickKickem-1982")
-	#client.get_data("DorialD-2401")
-	#client.get_data("LGBTracer-2875")
-	#client.get_data("Wonderbrah-21110")
-	#data=BalanceTeams(Stack2)
-	for Player in Stack2: client.get_data(Player)
+	Stack = [ "YOURTAGHERE-No#JustDashes-1111" ]
+	for Player in Stack: client.get_data(Player)
