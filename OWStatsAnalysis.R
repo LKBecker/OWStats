@@ -21,7 +21,7 @@ DamageHeroes 		<- names(heroes[which(heroes=="damage")])
 TankHeroes		<- names(heroes[which(heroes=="tank")])
 SupportHeroes	<- names(heroes[which(heroes=="support")])
 
-#plot_theme====
+#plot theme====
 library(extrafont); library(cowplot)
 TextSize = 8 #10 for thesis, 20+ for presentation
 geom.text.size =  TextSize #/ ggplot2::.pt #geom_text uses "mm", ggplot theme uses point... yikes.
@@ -46,13 +46,13 @@ completeDT <- function(DT, cols, defs = NULL){
   #whilst using .SDcols to restrict the columns being edited to those selected
   return(res)
 } 
-ExtractMainByStat <- function(StatName){
-  if ( (!StatName %in% colnames(GeneralStats)) ) { stop(paste0("Cannot ExtractMAinByStat(): ", StatName, " is not a column in GeneralStats.")) }
-  setnames(GeneralStats, StatName, "TEMP")
-  DT = GeneralStats[!is.na(TEMP),.SD[TEMP==max(TEMP), .(Hero, TEMP)], .(Player, Mode)]
-  setnames(GeneralStats, "TEMP", StatName)
+ExtractMainByStat <- function(DT, StatName){
+  if ( (!StatName %in% colnames(DT)) ) { stop(paste0("Cannot ExtractMAinByStat(): ", StatName, " is not a column in supplied DT")) }
+  setnames(DT, StatName, "TEMP")
+  DT2 = DT[!is.na(TEMP),.SD[TEMP==max(TEMP), .(Hero, TEMP)], .(Player, Mode)]
   setnames(DT, "TEMP", StatName)
-  return(DT)
+  setnames(DT2, "TEMP", StatName)
+  return(DT2)
 }
 ChooseFromFactorLevels <- function(Choices, prompt="Selected from this list:", ExcludeFrom=c(), ReturnIndex=T){
   Chosen <- F
@@ -87,7 +87,6 @@ ReorderColumns<-function(DT, LeadingCols){
   setcolorder(DT, c(LeadingCols, clnms[!(clnms %in% LeadingCols)]))
 }
 ParseGametypeStats<-function(DT, gametype, playerName){
-  #DT=RawData$stats; gametype="quickplay"; playerName="LGBTracer-2875"
   stopifnot(gametype %in% c("quickplay", "competitive"))
   DT=getElement(DT, gametype)
   RollingAvgs = as.data.table(getElement(DT, "rolling_average_stats"))
@@ -110,9 +109,7 @@ ParseGametypeStats<-function(DT, gametype, playerName){
   return(Data)
 }
 ParsePlayerStats <- function(ChosenFile=NA, region="eu"){
-  #region="eu"; ChosenFile="./190531/190531_LGBTracer-2875.json"
   if(is.na(ChosenFile)) {
-    setwd("E:/Users/User/Projects/00 Finished/OWStats Team Trolltel/")
     AvailableFiles<- list.files(pattern = ".json", recursive = T)
     ChosenFile 		<- ChooseFromFactorLevels(AvailableFiles, "Choose file to extract:", ReturnIndex = F)
     rm(AvailableFiles)
@@ -205,8 +202,6 @@ ParsePlayerStats <- function(ChosenFile=NA, region="eu"){
   return(Player)
 }
 ParseAllStats <- function(StatsDate=NA, Players=AllPlayers, region="eu"){
-  #Players = c("Bartie-2639"); StatsDate="181023"; region="eu"
-  setwd("E:/Users/User/Projects/00 Finished/OWStats Team Trolltel/")
   if (is.na(StatsDate)){
     AllFiles 	<- str_replace_all(list.dirs(), "\\./", "")
     FileDates <- unique(str_match(AllFiles, "(\\d{6})")[,2])
@@ -240,35 +235,34 @@ ParseAllStats <- function(StatsDate=NA, Players=AllPlayers, region="eu"){
   return(Team)
 }
 #script----
-b = ParseAllStats(StatsDate="190531", Players=c("Wonderbrah-21110", "LGBTracer-2875"))
-
+OWData = ParseAllStats()
 #HeroTime Plot====
-ggplot(b$Playtime, aes(x=role, y=playtime, fill=hero))+geom_col() + facet_wrap(gamemode~SRName, scales="free_y")+
+ggplot(OWData$Playtime, aes(x=role, y=playtime, fill=hero))+geom_col() + facet_wrap(gamemode~SRName, scales="free_y")+
   scale_fill_manual(values=heroColors)+theme(axis.text.x = element_text(angle=90, vjust = 0.3, hjust=1))+ylab("Playtime (decimal hours)")+xlab("")
 
 #Highest In Game====
-HighScores.M = melt(b$HighScores, id.vars = c("player", "SRName", "gamemode", "hero"))
+HighScores.M = melt(OWData$HighScores, id.vars = c("player", "SRName", "gamemode", "hero"))
 HiScorePlot = ggplot(HighScores.M[gamemode=="competitive"], aes(x=SRName, y=value, color=hero, group=hero))+
   geom_text(aes(label=hero), color="black", size=10/ggplot2::.pt)+scale_color_manual(values=heroColors)+facet_wrap(~variable, scales="free_y")+
   theme(axis.text.x = element_text(angle=90, vjust = 0.3, hjust=1))+ggtitle("Competitive")
 #ggsave("OWPLOT1.emf", HiScorePlot, device = "emf", units = "cm", width=20, height=25)
 
 #accuracy====
-AccuracyData = c("player", "SRName", "gamemode", "hero", colnames(b$HeroStats)[grepl("acc", colnames(b$HeroStats))])
+AccuracyData = c("player", "SRName", "gamemode", "hero", colnames(OWData$HeroStats)[grepl("acc", colnames(OWData$HeroStats))])
 AccuracyData = AccuracyData[!grepl("best_in_game", AccuracyData)]
 AccuracyData = AccuracyData[!grepl("primal", AccuracyData)]
 AccuracyData = AccuracyData[!grepl("tesla", AccuracyData)]
 AccuracyData = AccuracyData[!grepl("hook", AccuracyData)]
 AccuracyData = AccuracyData[!grepl("direct", AccuracyData)]
-AccuracyData = b$HeroStats[, ..AccuracyData]
+AccuracyData = OWData$HeroStats[, ..AccuracyData]
 AccuracyData[!is.na(unscoped_accuracy), primary_fire_accuracy:=unscoped_accuracy]
 AccuracyData[!is.na(rocket_hammer_melee_accuracy), quick_melee_accuracy:=rocket_hammer_melee_accuracy]
 AccuracyData[!is.na(healing_accuracy), primary_fire_accuracy:=healing_accuracy]
 set(AccuracyData, j = which(colnames(AccuracyData) %in% c("rocket_hammer_melee_accuracy", "weapon_accuracy", "healing_accuracy")), value = NULL)
 setkey(AccuracyData, "player", "SRName", "hero", "gamemode")
-setkey(b$Playtime, "player", "SRName", "hero", "gamemode")
+setkey(OWData$Playtime, "player", "SRName", "hero", "gamemode")
 
-AccuracyData = b$Playtime[AccuracyData]
+AccuracyData = OWData$Playtime[AccuracyData]
 AccuracyData.M = melt(AccuracyData, id.vars=c("player", "SRName", "hero", "gamemode"))
 ggplot(AccuracyData.M[!is.na(value)], aes(x=paste0(player, " (", gamemode, ")"), y=value, color=hero, group=hero))+geom_jitter(width=0.1, size=2)+
   scale_color_manual(values=heroColors)+facet_grid(~variable)+geom_text(aes(label=hero), size=geom.text.size/ggplot2::.pt, nudge_x = 0.05)+
