@@ -1,0 +1,59 @@
+https://owapi.net/api/v3/u/Asak-21348/blob
+https://owapi.net/api/v3/u/HelpX-2656/blob
+https://owapi.net/api/v3/u/ICapriX-2700/blob
+https://owapi.net/api/v3/u/McLovin-22252/blob
+https://owapi.net/api/v3/u/SatyrSaint-2705/blob
+https://owapi.net/api/v3/u/Shodrei-2156/blob
+https://owapi.net/api/v3/u/Simply-21778/blob
+
+Asak-21348
+HelpX-2656
+ICapriX-2700
+McLovin-22252
+SatyrSaint-2705
+Shodrei-2156
+Simply-21778
+
+
+	# for (hero in names(HeroStats.CP)){
+	# 	subset.cp 			<- getElement(HeroStats.CP, hero)
+	# 	subset.cp.gs		<- data.table(t(getElement(subset.cp, "general_stats")))
+	# 	subset.cp.as		<- data.table(t(getElement(subset.cp, "average_stats"))) #HeroAverages
+	# 	subset.cp.hs		<- data.table(t(getElement(subset.cp, "hero_stats")))
+	# 
+	# 	subset.cp.gs[,Mode:="Competitive"]
+	# 	subset.cp.as[,Mode:="Competitive"]
+	# 	subset.cp.hs[,Mode:="Competitive"]		
+	# 	subset.cp.gs[,Player:=PlayerName]
+	# 	subset.cp.as[,Player:=PlayerName]
+	# 	subset.cp.hs[,Player:=PlayerName]
+	# 	subset.cp.gs[,Hero:=hero]
+	# 	subset.cp.as[,Hero:=hero]
+	# 	subset.cp.hs[,Hero:=hero]
+	# 
+	# 	PlayerStats$GeneralStats <- rbind(PlayerStats$GeneralStats, subset.cp.gs, fill=T)
+	# 	PlayerStats$HeroAverages<- rbind(PlayerStats$HeroAverages, subset.cp.as, fill=T)
+	# 	PlayerStats$HeroSpecific	<- rbind(PlayerStats$HeroSpecific, subset.cp.hs, fill=T)
+	# }		
+	# 
+	# for (hero in names(HeroStats.QP)){
+	# 	subset.qp 			<- getElement(HeroStats.QP, hero)
+	# 	subset.qp.gs		<- data.table(t(getElement(subset.qp, "general_stats")))
+	# 	subset.qp.as		<- data.table(t(getElement(subset.qp, "average_stats")))
+	# 	subset.qp.hs		<- data.table(t(getElement(subset.qp, "hero_stats")))
+	# 	
+	# 	subset.qp.gs[,Player:=PlayerName]
+	# 	subset.qp.as[,Player:=PlayerName]
+	# 	subset.qp.hs[,Player:=PlayerName]
+	# 	subset.qp.gs[,Hero:=hero]
+	# 	subset.qp.as[,Hero:=hero]
+	# 	subset.qp.hs[,Hero:=hero]
+	# 	subset.qp.gs[,Mode:="QuickPlay"]
+	# 	subset.qp.as[,Mode:="QuickPlay"]
+	# 	subset.qp.hs[,Mode:="QuickPlay"]
+	# 	
+	# 	PlayerStats$GeneralStats 			<- rbind(PlayerStats$GeneralStats, subset.qp.gs, fill=T)
+	# 	PlayerStats$HeroAverages	<- rbind(PlayerStats$HeroAverages, subset.qp.as, fill=T)
+	# 	PlayerStats$HeroSpecific	<- rbind(PlayerStats$HeroSpecific, subset.qp.hs, fill=T)
+	# 	
+	# }
